@@ -2,8 +2,10 @@
   
 Prisma uses [pywal](https://github.com/dylanaraps/pywal/) to generate color schemes and apply them to Discord, Obsidian, Alacritty, etc. to match Wallpaper Engine animated wallpapers or static Windows wallpapers. It can automatically choose new ones from your library everyday.  
   
-In it's current state, Prisma requires basic terminal skill. If you'd rather use a GUI, Nyx is coming soon and will contain graphical installers and settings for Linux-like tools/WSL.  
+In it's current state, Prisma requires basic terminal skill.
   
+Prisma is released under the [GNU General Public License v3.0](COPYING).  
+
   
 ## General Usage  
   
@@ -61,8 +63,10 @@ Run the program once then edit C:\Users\USER\AppData\Local\prisma\config.json wi
   
   
 ## "Installation"  
-  
-1. Click Prisma.exe under Assets in the [Latest Release](https://github.com/rakinishraq/prisma/releases/latest) page to download.  
+ 
+1. Install [ImageMagick](https://imagemagick.org/script/download.php#windows) while making sure "Add application directory to your system path" is enabled then restart your PC.
+2. Click Prisma.exe under Assets in the [Latest Release](https://github.com/rakinishraq/prisma/releases/latest) page to download.  
+
   
   
 ## Common Uses  
@@ -74,42 +78,25 @@ Run the program once then edit C:\Users\USER\AppData\Local\prisma\config.json wi
 - `.\prisma.exe filename_2560x1080.ext filename_1920x1080.ext` sets different wallpapers for different wallpapers without saving. The number of inputs must be equal to the number of monitors if there's more than one input.   
   
   
-## Advanced Use Requirements  
+## Requirements  
+
+### Windows 10/11
+ -  [imagemagick](https://imagemagick.org/script/download.php#windows) (must check "Add to system path")
   
-### WSL and Running from Source  
+### WSL Packages
  -  imagemagick  
  -  python 3.x (pip install pywal wpgtk)  
  -  ffmpeg  
+ 
+### Run from Source Code
+ -  python 3.x if running from source (pip install -r requirements.txt)  
+
   
-### Run from Source  
- -  python 3.x (pip install -r requirements.txt)  
+## Credits (copies distributed with project)  
   
-  
-## Planned Features  
-   
-- [ ] README demonstration visuals
-- [ ] requirements.txt (venv)  
-- [ ] alacritty template cleanup
-- [ ] list choices flag/implicit paths  
-- [ ] handle unsupported encoding in names  
-- [ ] debug messages  
-- [ ] cache files w/ custom fields  
-- [ ] wpgtk symlink  
-- [ ] tests/test fresh installs  
-- [ ] light mode flag  
-- [ ] distribution (gh actions?)  
-- [ ] openrgb and firefox support  
-- [ ] silence pywal's imagemagick  
-  
-  
-## License  
-  
-Prisma is released under the [GNU General Public License v3.0](COPYING).  
-  
-  
-## Credits  
-  
-- Discord template from pywal-discord d12972d by FilipLitwora (GNU General Public License v3.0)  
-- Obsidian template from Minimal Obsidian 4.3.5 by kepano (MIT License)  
-- fallback wallpaper binary from win-wallpaper by sindresorhus (MIT License)  
-- Alacritty template from alacritty by The Alacritty Project (Apache License, Version 2.0)  
+- Discord template from [pywal-discord](https://github.com/FilipLitwora/pywal-discord) d12972d by FilipLitwora (GNU General Public License v3.0)  
+  - changes: colors of theme subsituted in theme css file
+- Obsidian template from [Minimal Obsidian](https://github.com/kepano/obsidian-minimal) 4.3.5 by kepano (MIT License)  
+- fallback wallpaper binary from [win-wallpaper](https://github.com/sindresorhus/win-wallpaper) by sindresorhus (MIT License)  
+- Alacritty template from [alacritty](https://github.com/alacritty/alacritty) by The Alacritty Project (Apache License, Version 2.0)  
+  - changes: colors of tomorrow night theme subsituted in default config file

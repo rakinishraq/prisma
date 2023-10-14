@@ -5,7 +5,7 @@ import pywal.backends.wal
 from time import sleep
 from subprocess import Popen, check_output, DEVNULL
 from random import choice as rchoice
-from json import loads
+from json import loads, dumps
 from os import path, mkdir, listdir, remove
 import sys
 from datetime import date as dt
@@ -13,6 +13,7 @@ import pywal
 import cv2
 import moviepy.video.io.ImageSequenceClip as sequence
 from shutil import rmtree, copytree, copy
+from rgb import rgb_keyboard
 
 home = path.expanduser("~").replace("\\", "/")
 data_path = home+"/AppData/Local/prisma"
@@ -33,7 +34,7 @@ def fatal(m, p=None):
     print(m+'\n')
     if p:
         p.print_help()
-    exit(2)
+    sys.exit(2)
 
 
 def resource(relative_path):
@@ -74,11 +75,12 @@ def random_wal():
     if config["wal_engine"]:
         with open(config["wal_engine"]+"/config.json", encoding='cp850') as f:
             f = loads(f.read())
-        for p in f[list(f.keys())[1]]["general"]["playlists"]:
-            if p["name"] == "Prisma":
-                choices += [i[:i.rindex("/")]+"/project.json" \
-                    for i in p["items"]]
-                break
+        for n in range(len(f)):
+            for p in f[n]["general"]["playlists"]:
+                if p["name"] == "Prisma":
+                    choices += [i[:i.rindex("/")]+"/project.json" \
+                        for i in p["items"]]
+                    break
 
     choice = rchoice(choices) # choose randomly
 
@@ -119,11 +121,12 @@ def daily():
     return choice
 
 
-def colors(img):
+def gen_colors(img, port, replace=False):
     """Generates color scheme from image and applies to templates.
 
     Parameters:
         img (string): path leading to input image
+        replace (bool): ignores existing color file
     """
     
     # get/create color scheme
@@ -132,16 +135,24 @@ def colors(img):
             pywal.colors.saturate_colors(
                 getattr(sys.modules["pywal.backends.wal"], "get")(img, False),
                 ""), img)
+    with open(data_path+"/colors.json", "w") as cj:
+        print("Generated Windows colors.json")
+        cj.write(dumps(wal))
     wal["colors"].update(wal["special"])
     wal = wal["colors"]
     print("Fetched/generated color scheme")
 
+    try:
+        rgb_keyboard(wal["foreground"], wal["background"], wal["color4"], port)
+        print("Applied OpenRGB colors")
+    except Exception as e:
+        print("OpenRGB error: " + str(e))
 
     if config["wsl"]: # wpgtk
         wsl = "wsl -d " + config["wsl"]
         cmd(wsl + " -- wpg -s \"%s\"" % (img := convert(img)))
         img = img.replace("/", "_").replace(" ", "\\ ")
-        print(wsl + " -- rm ~/.config/wpg/schemes/" + img[:img.rfind('.')] + '\\*')
+        Popen(wsl + " -- rm ~/.config/wpg/schemes/" + img[:img.rfind('.')] + '*')
 
 
     # apply templates
@@ -166,9 +177,9 @@ def colors(img):
         print("Applied %s template" % base_name)
 
 
-def wal_engine(wals):
+def wal_engine(wals, port):
     """Apply wallpapers to Wallpaper Engine and pass first one's
-    file/still/thumbnail path to colors()
+    file/still/thumbnail path to gen_colors()
     """
 
     print("\n\t".join(["Selected wallpapers:"]+wals))
@@ -219,7 +230,7 @@ def wal_engine(wals):
                             break
                     else:
                         fatal("No image found for: "+wal)
-                print("Using image for color scheme: "+wal)
+                print("Using image for color scheme: "+img.replace('\\', '/'))
             project = wal
 
 
@@ -230,7 +241,7 @@ def wal_engine(wals):
                 p.write(t.replace("FILE", source))
 
         if img: # set colors
-            colors(img)
+            gen_colors(img, port)
             img = None
         Popen(["powershell.exe", "&", # set wallpaper
             '"'+config["wal_engine"]+"/wallpaper32.exe\"", "-control",
@@ -258,7 +269,7 @@ def main():
             config_content = c.read().replace("HOME", home)
         with open(config_path, "w") as c:
             c.write(config_content)
-        fatal("Config file created in %s.\nEdit then rerun.")
+        fatal("Config file created in %s.\nEdit then rerun." % config_path)
     else:
         with open(config_path) as c:
             config_content = c.read()
@@ -278,6 +289,8 @@ def main():
     parser.add_argument("-co", "--colors-only", action="store_true",
             help="Ignores all other inputs and sets colors with "
                 "main monitor's picture wallpaper.")
+    parser.add_argument("-p", "--port", type=int, default=6742,
+            help="OpenRGB port. Default is 6742, like OpenRGB's default.")
 
     args = parser.parse_args([
         [r"E:\Gallery\Wallpapers\kokomi_2560x1080.mp4", r"E:\Gallery\Wallpapers\kokomi_1920x1080.mp4"],
@@ -288,9 +301,9 @@ def main():
     ][-1])
 
     # handle arguments
-    inputs = [s.replace("\\", "/") for s in args.input]
+    inputs = [s.replace("\\", "/").strip() for s in args.input]
     if args.colors_only:
-        colors(home+"/AppData/Roaming/Microsoft/Windows/Themes/TranscodedWallpaper")
+        gen_colors(home+"/AppData/Roaming/Microsoft/Windows/Themes/TranscodedWallpaper", True)
         fatal("Done.")
     elif args.random:
         inputs = random_wal()
@@ -299,7 +312,7 @@ def main():
             inputs = daily()
             args.save = True
         else:
-            colors(home+"/AppData/Roaming/Microsoft/Windows/Themes/TranscodedWallpaper")
+            gen_colors(home+"/AppData/Roaming/Microsoft/Windows/Themes/TranscodedWallpaper")
             fatal("Done.")
     else:
         for fl in inputs:
@@ -316,7 +329,7 @@ def main():
     if len(inputs) == 1:
         if config["wal_engine"]:
             inputs *= len(config["monitors"])
-            wal_engine(inputs)
+            wal_engine(inputs, args.port)
         else:
             fallpaper(inputs[0])
             print("Using fallback wallpaper binary")
@@ -325,7 +338,7 @@ def main():
             fatal("Wallpaper Engine required for multiple inputs.", parser)
         if len(inputs) != len(config["monitors"]):
             fatal("Input one wallpaper or equal to number of monitors.", parser)
-        wal_engine(inputs)
+        wal_engine(inputs, args.port)
 
     # save
     if args.save:
