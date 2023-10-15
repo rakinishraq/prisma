@@ -1,11 +1,11 @@
 # Prisma  
   
-Prisma uses [pywal](https://github.com/dylanaraps/pywal/) to generate color schemes and apply them to Discord, Obsidian, Alacritty, etc. to match Wallpaper Engine animated wallpapers or static Windows wallpapers. It can automatically choose new ones from your library everyday.  
+Prisma uses [pywal](https://github.com/dylanaraps/pywal/) to generate color schemes and apply them to Firefox (including websites), Discord, Obsidian, Alacritty, WSL GTK/QT, etc. to match [animated](https://wallpaperengine.io) or static wallpapers. It can optionally choose new ones from your library everyday automatically as well.
   
-In it's current state, Prisma requires basic terminal skill.
+Similar functionality can be found in Linux (using wpgtk), which was the inspiration for the Nyx series of tools. In it's current state, using this requires basic terminal skill.
   
-Prisma is released under the [GNU General Public License v3.0](COPYING).  
-
+Prisma is released under the [GNU General Public License v3.0](COPYING).
+  
   
 ## General Usage  
   
@@ -26,7 +26,13 @@ optional arguments:
   -s, --save          Save input as today's wallpaper.  
   -co, --colors-only  Ignores all other inputs and sets colors with main  
                       monitor's picture wallpaper.  
-```  
+```    
+  
+  
+## "Installation"  
+ 
+1. Install [ImageMagick](https://imagemagick.org/script/download.php#windows) while making sure "Add application directory to your system path" is enabled then restart your PC.
+2. Click "prisma.exe" under Assets in the [Latest Release](https://github.com/rakinishraq/prisma/releases/latest) page to download.  
   
   
 ## Configuration  
@@ -39,7 +45,7 @@ Run the program once then edit C:\Users\USER\AppData\Local\prisma\config.json wi
     {  
         "alacritty": "C:/Users/USER/AppData/Roaming/alacritty/alacritty.yml",  
         "discord": "C:/Users/USER/AppData/Roaming/BetterDiscord/themes/pywal-discord-default.theme.css",  
-        "obsidian": "C:/Projects/Notes/.obsidian/themes/Minimal.css"  
+        "obsidian": "C:/Users/USER/Documents/Notes/.obsidian/themes/Minimal.css"  
     },  
     "wsl": "Manjaro",  
   
@@ -50,7 +56,7 @@ Run the program once then edit C:\Users\USER\AppData\Local\prisma\config.json wi
 }  
 ```  
   
-- Paths must use "/", not the usual Windows "\".  
+- Paths must use "/", not the usual Windows "\\".  
 - Each line in the templates section is formatted with the template filename on the left (stored in the templates folder next to config.json) and the target file to replace on the right.  
 - Alacritty and Obsidian templates are included by default but aren't added to the config file since the Alacritty template will override your existing config if it exists and the Obsidian theme location depends on your Vault's location.  
 - In the template files, {colorname} is replaced with the hex code for a color or a HSL/RGB component like {colorname.r} for Red.  
@@ -60,13 +66,6 @@ Run the program once then edit C:\Users\USER\AppData\Local\prisma\config.json wi
 - You must include variants for all resolutions if using multiple files. Otherwise, name the single file regularly (like painter.png).  
 - Set wal_engine to your Wallpaper Engine installation path. If left blank, Prisma will use win_wallpaper.exe as a fallback to set a single static wallpaper across all monitors (no animated or unique multi-monitor wallpaper support).  
 - The monitors variable should contain all your monitors in the order they appear in Wallpaper Engine, represented by their resolutions (so if you have multiple with the same resolution, repeat it). This variable is optional if Wallpaer Engine isn't installed.  
-  
-  
-## "Installation"  
- 
-1. Install [ImageMagick](https://imagemagick.org/script/download.php#windows) while making sure "Add application directory to your system path" is enabled then restart your PC.
-2. Click Prisma.exe under Assets in the [Latest Release](https://github.com/rakinishraq/prisma/releases/latest) page to download.  
-
   
   
 ## Common Uses  
@@ -87,10 +86,10 @@ Run the program once then edit C:\Users\USER\AppData\Local\prisma\config.json wi
  -  imagemagick  
  -  python 3.x (pip install pywal wpgtk)  
  -  ffmpeg  
- 
+  
 ### Run from Source Code
  -  python 3.x if running from source (pip install -r requirements.txt)  
-
+  
   
 ## Credits (copies distributed with project)  
   
