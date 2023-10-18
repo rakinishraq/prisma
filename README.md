@@ -21,10 +21,6 @@ To make changes to the generated config file, like to enable animated wallpapers
 ## Integrations
 
 - **OpenRGB:** An RGB perpipheral integration is in progress. Currently testing with the Wormier K87 ([SonixQMK firmware](https://sonixqmk.github.io//SonixDocs/compatible_kb/) supports many brands), Razer Blade 15 keyboard and Viper Mini.
-- **Wallpaper Engine:** This paid tool is used for animated (sometimes interactive and audio-reactive) wallpapers as well as setting seperate image wallpapers per monitor auutomatically. See the last two parts in the [Configuration section](https://github.com/rakinishraq/prisma#configuration).
-  - **All-Black Theme?** This tool sets the wallpaper behind Wallpaper Engine as all-black currently. An alternative is in progress since this (1) causes Window's automatic accent color (details in the "Windows 10/11 Theme" integration below) to be all-black and (2) running the tool again sets the template-based schemes as all-black.  
-  1. For now, use the "Start with Windows in High Priority" and "Adjust Windows color" options in Wallpaper Engine's General tab in Settings to combat the former issue.  
-  2. To prevent the latter issue, use the "--save" argument and "saved" variables (further details in the [CLI Usage section](https://github.com/rakinishraq/prisma#cli-usage) below).  
 - **Visual Studio Code:** Install the [extension](https://marketplace.visualstudio.com/items?itemName=dlasagno.wal-theme) and enable the theme in the Settings menu.  
 - **Firefox/Thunderbird:** Install the Pywalfox [extension](https://addons.mozilla.org/en-US/firefox/addon/pywalfox/) and [application](https://github.com/Frewacom/pywalfox). The process for the latter may be complex for those new to Python/Pip. Tested with Librewolf.  
 - **Obsidian:** The theme is temporarily not functional with the newest versions of the template theme, Minimal. When it is, add an entry of your Vault's location in the config file under "obsidian" like the [example config file](https://github.com/rakinishraq/prisma#Configuration) below. For now, the BG/FG colors can be entered into the Settings manually (details in the "And More!" integration below).  
@@ -34,10 +30,18 @@ To make changes to the generated config file, like to enable animated wallpapers
 - **Neovim:** Use this [Neovim theme](https://github.com/AlphaTechnolog/pywal.nvim) for pywal support in WSL and potentially native Windows as well.
 - **Windows 10/11 Theme:** The color scheme of Windows can be set to automatically adapt in Settings -> Colors -> Accent color (set to Automatic).
 - **Alacritty:** An Alacritty configuration file is included but enabling it means you must make all edits in the templates file and run the tool to update. A line-replacing update method is in progress to prevent this.  
+- **Wallpaper Engine:** This paid tool is used for animated (sometimes interactive and audio-reactive) wallpapers as well as setting seperate image wallpapers per monitor automatically. See the last two parts in the [Configuration section](https://github.com/rakinishraq/prisma#configuration).
+  - **Disclaimer:** _There are dangerous amounts of anime and NSFW content in the Wallpaper Engine workshop. As a developer, I bear no responsibility for any potential loss of brain cells. Proceed with caution._
+  - **"Prisma" Playlist:** Save all your Wallpaper Engine favorites into a playlist named "Prisma" and the random/daily functions will add them to the random choice pool/collective library.
+  - **Wallpaper folder:** Use a folder of photo/video sets of wallpapers for different monitor resolutions. For video files, the first frame is used for scheme generation and used with a skeleton WE project. For images, they're converted into full WE projects.
+    - Do not add these to Prisma playlist as they are replaced and this folder's contents are part of the random choice pool already.
+  - **All-Black Theme?** This tool sets the wallpaper behind Wallpaper Engine as all-black currently. An alternative is in progress since this (a) causes Window's automatic accent color (details in the "Windows 10/11 Theme" integration below) to be all-black and (b) running the tool again sets the template-based schemes as all-black.  
+    1. For now, use the "Start with Windows in High Priority" and "Adjust Windows color" options in Wallpaper Engine's General tab in Settings to combat the former issue.  
+    2. To prevent the latter issue, use the "--save" argument and "saved" variables (further details in the [CLI Usage section](https://github.com/rakinishraq/prisma#cli-usage) below).  
 - **WSL GTK/QT:** Set the WSL variable as the name of your WSL OS name if you want [wpgtk](https://github.com/deviantfero/wpgtk) compatibility (more readable terminal color scheme as well as GTK/QT and other Linux GUI app theming). All Pywal supported apps should update automatically, too. If WSL is not installed, leave it empty.  
   - **Zathura:** Install and run [this script](https://github.com/GideonWolfe/Zathura-Pywal) within WSL to generate a new themed zathurarc file.
-  - wpgtk depends on the imagemagick and ffmpeg packages
   - There's probably a similar process for many other Linux apps that sync with Linux's pywal theme files, which wpgtk generates. This was tested with GWSL on feh and zathura.
+  - wpgtk depends on the imagemagick and ffmpeg packages
 - **And More!** The background and foreground colors are shown in the command line output and the full color scheme is available in C:\Users\USER\\.cache\wal\colors.json to manually input in any app.
   
   
@@ -76,39 +80,38 @@ Edit the new C:\Users\USER\AppData\Local\prisma\config.json file with any text e
 - The monitors variable should contain all your monitors in the order they appear in Wallpaper Engine, represented by their resolutions (so if you have multiple with the same resolution, repeat it). This variable isn't used if Wallpaer Engine isn't installed.  
 ### Photo/Video Wallpapers
 - The wallpapers path should contain photos and videos to be randomly selected from daily. If you want to use different files for different resolution monitors, append \_WIDTHxHEIGHT to the end of the filename (like painter\_1920x1080.png and painter\_2560x1080.png). This currently supports JPGs, PNGs and MP4s. Files starting with exclamation points and all subfolders are ignored.  More details in the [Common Uses section](https://github.com/rakinishraq/prisma#common-uses) below.  
-- You must include variants for all resolutions if using multiple files. Otherwise, name the single file regularly (like painter.png).  
-- If you don't want to use Wallpaper Engine but want to set seperate image wallpapers per monitor, you'd need to manually do so in the Windows settings. This seems to be a limitation not with the wallpaper binary but with Windows' command line abilities.  
+- You must include variants for all resolutions of your different monitors if using multiple files. Otherwise, name the single file regularly (like painter.png).  
+- If you don't want to use Wallpaper Engine but want to set seperate image wallpapers per monitor, you'd need to manually do so in the Windows settings. This seems to be a limitation not with the wallpaper binary but with Windows' command line abilities. However, you can easily use the "--colors-only" argument after.  
   
   
   
 ## CLI Usage  
   
-```  
-usage: prisma.exe [-h] [-r] [-s] [-co] [input ...]  
-  
-Generates color scheme from animated (Wallpaper Engine) or static (Windows)
-wallpapers and applies to templates. If no inputs are provided, this uses the
-current Windows wallpaper (same as --colors-only).
-  
-positional arguments:  
-  input               Input image/video/project.json file. Defaults to today's  
-                      wallpaper.  
-  
-optional arguments:  
-  -h, --help          show this help message and exit  
-  -r, --random        Load random wallpaper. Input file is then ignored.  
-  -s, --save          Save input as today's wallpaper.  
-  -co, --colors-only  Ignores all other inputs and sets colors with main  
-                      monitor's picture wallpaper.  
-```    
+
+```
+Generates color scheme from animated (Wallpaper Engine) or static (Windows) wallpapers and applies 
+to templates. Defaults to --colors-only if no arguments provided.
+
+positional arguments:
+  input                 Input image/video/project.json file or "saved" keyword.
+
+options:
+  -h, --help            show this help message and exit
+  -r, --random          load random wallpaper; input file is then ignored
+  -s, --save            save inputs as wallpaper set; retrieve with "saved" keyword
+  -co, --colors-only    ignores all other inputs and sets colors with current Windows wallpaper
+  -d, --daily           select a random wallpaper if new day and save it
+  -p PORT, --port PORT  port for OpenRGB communication (default is 6742)
+```
 
 
 ## Common Uses
 
-- `.\prisma.exe` checks if there's already been a wallpaper saved today and loads it if it exists. Otherwise, it randomly picks one from your library (wallpapers/ and the Prisma Wallpaper Engine playlist) and saves it. Thus, if you placed the exe in C:\Users\USER\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup, you would automatically have a new theme everyday with no manual input (or make a shortcut to the location of the exe, recommended only after having tested it in a different folder manually a few times).  
-- `.\prisma.exe -r -s` randomly picks a wallpaper from your library and saves it regardless of if one was already selected today. This is useful for skipping a daily wallpaper.  
 - `.\prisma.exe -co` fetches your current Windows wallpaper image and generates a color scheme and themes from it. This is useful if you already have a wallpaper that you want to keep.  
-- `.\prisma.exe filename.ext -s` sets all your wallpapers to that single file and saves it as today's wallpaper. Saving is useful for returning to today's selection after experimenting with other choices or refreshing the Wallpaper Engine project generation after restarting your PC.  
+- `.\prisma.exe` is the same as `.\prisma.exe -co`
+- `.\prisma.exe -d` checks if there's already been a wallpaper saved today and loads it if it exists. Otherwise, it randomly picks one from your library (wallpapers folder and the Prisma Wallpaper Engine playlist) and saves it.
+- `.\prisma.exe -r -s` randomly picks a wallpaper from your library and saves it regardless of if one was already selected today. This is useful for skipping a daily wallpaper.  
+- `.\prisma.exe filename.ext -s filename.ext` sets all your wallpapers to that single file and saves it as today's wallpaper. Saving is useful for returning to today's selection after experimenting with other choices or refreshing the Wallpaper Engine project generation after restarting your PC.  
 - `.\prisma.exe filename_2560x1080.ext filename_1920x1080.ext` sets different wallpapers for different wallpapers without saving. The number of inputs must be equal to the number of monitors if there's more than one input.   
   
   

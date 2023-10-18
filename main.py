@@ -293,8 +293,8 @@ def main(test_config=None, test_args=None):
             mkdir(data_path)
         if not path.isdir(template_path):
             copytree(resource("templates"), template_path)
-        if not path.isdir(license_path):
-            copytree(resource("licenses"), license_path)
+        if not path.isdir(licenses_path):
+            copytree(resource("licenses"), licenses_path)
         if not path.isfile(config_path):
             with open(resource("config_template.json")) as c:
                 config_content = c.read().replace("HOME", home)
@@ -313,24 +313,28 @@ def main(test_config=None, test_args=None):
 
     # parse arguments
     parser = Parser()
-    parser.description = "Generates color scheme from animated (Wallpaper Engine) or static (Windows) wallpapers and applies to templates. If no inputs are provided, this uses the current Windows wallpaper (same as --colors-only)."
+    parser.description = "Generates color scheme from animated (Wallpaper Engine) or static (Windows) wallpapers and applies to templates.\nDefaults to --colors-only if no arguments provided."
     parser.add_argument("-r", "--random", action="store_true",
-            help="Load random wallpaper. Input file is then ignored.")
+            help="load random wallpaper; input file is then ignored")
     parser.add_argument("-s", "--save", action="store_true",
-            help="Save input as today's wallpaper.")
+            help="save inputs as wallpaper set; retrieve with \"saved\" keyword")
     parser.add_argument("input", default=[], nargs="*",
-            help="Input image/video/project.json file.")
+            help="input image/video/project.json file or \"saved\" keyword")
     parser.add_argument("-co", "--colors-only", action="store_true",
-            help="Ignores all other inputs and sets colors with "
-                "current Windows wallpaper.")
+            help="ignores all other inputs and sets colors with "
+                "current Windows wallpaper")
     parser.add_argument("-d", "--daily", action="store_true",
-            help="Select a random wallpaper if new day and save it")
+            help="select a random wallpaper if new day and save it")
     parser.add_argument("-p", "--port", type=int, default=6742,
-            help="OpenRGB port. Default is 6742, like OpenRGB's default.")
+            help="port for OpenRGB communication (default is 6742)")
     args = parser.parse_args(test_args)
 
     # handle arguments
     inputs = [s.replace("\\", "/").strip() for s in args.input]
+    if "saved" in inputs: # retrieve saved
+        if path.isfile(cache_path):
+            with open(cache_path) as c:
+                _, *inputs = c.read().split("|")
     current_wal = home+"/AppData/Roaming/Microsoft/Windows/Themes/TranscodedWallpaper"
     if args.colors_only: # if colors_only, ignore all other args
         gen_colors(current_wal)
@@ -340,11 +344,16 @@ def main(test_config=None, test_args=None):
     elif not inputs: # no args and no inputs = same as colors_only
         gen_colors(current_wal)
         fatal("Done.")
-    else: # no args only inputs
+    else: # no args, only inputs
         for fl in inputs:
-            s = pic_ext + ((vid_ext+["json"]) if config["wal_engine"] else [])
-            if not (path.isfile(fl) and fl[fl.rfind(".")+1:] in s):
-                fatal("Invalid/unsupported file input: " + fl, parser)
+            # supports all entries in pic_ext,vid_ext and .json if using WE
+            ext = fl[fl.rfind(".")+1:]
+            if not path.isfile(fl): # file exists?
+                fatal("Invalid file input: " + fl, parser)
+            elif not ext in pic_ext+vid_ext+["json"]: # file supported?
+                fatal("Unsupported file input: " + fl, parser)
+            elif ext in vid_ext+["json"] and not config["wal_engine"]: # WE installed?
+                fatal("Wallpaper Engine needs to be configured for video/live inputs.")
 
     # create/clear temp directory
     if path.isdir(rm := tmp_path+"/picture"):
@@ -361,6 +370,7 @@ def main(test_config=None, test_args=None):
         else:
             print("Using fallback wallpaper binary")
             fallpaper(inputs[0])
+            gen_colors(inputs[0])
     else:
         if not config["wal_engine"]:
             fatal("Wallpaper Engine required for multiple inputs.", parser)
@@ -370,9 +380,12 @@ def main(test_config=None, test_args=None):
 
     # save
     if args.save:
-        with open(cache_path, "w") as c:
-            c.write("|".join([str(dt.today())]+inputs))
-        print("Saved wallpapers to: "+cache_path)
+        if not args.colors_only and inputs:
+            with open(cache_path, "w") as c:
+                c.write("|".join([str(dt.today())]+inputs))
+            print("Saved wallpapers to: "+cache_path)
+        else:
+            "Save flag ignored"
 
 if __name__ == "__main__":
     main()
