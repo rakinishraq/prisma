@@ -42,9 +42,9 @@ Edit the new C:\Users\USER\AppData\Local\prisma\config.json file with any text e
 {  
     "templates":  
     {  
-        "alacritty": "C:/Users/USER/AppData/Roaming/alacritty/alacritty.yml",  
-        "discord": "C:/Users/USER/AppData/Roaming/BetterDiscord/themes/pywal-discord-default.theme.css",  
-        "obsidian": "C:/Users/USER/Documents/Notes/.obsidian/themes/Minimal.css"  
+        "alacritty.txt": "C:/Users/USER/AppData/Roaming/alacritty/alacritty.yml",  
+        "discord.txt": "C:/Users/USER/AppData/Roaming/BetterDiscord/themes/pywal-discord-default.theme.css",  
+        "obsidian.txt": "C:/Users/USER/Documents/Notes/.obsidian/themes/Minimal.css"  
     },  
   
     "wallpapers": "D:/Gallery/Wallpapers",  

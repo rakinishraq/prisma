@@ -1,10 +1,10 @@
 {
     "templates":
     {
-        "discord": "HOME/AppData/Roaming/BetterDiscord/themes/pywal-discord-default.theme.css"
+        "discord.txt": "HOME/AppData/Roaming/BetterDiscord/themes/pywal-discord-default.theme.css"
     },
 
-    "wallpapers": "E:/Gallery/Wallpapers",
+    "wallpapers": "HOME/Pictures/Wallpapers",
 
     "wal_engine": "",
     "monitors": ["1920x1080"],
