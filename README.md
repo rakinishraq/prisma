@@ -23,14 +23,14 @@ To make changes to the generated config file, like to enable animated wallpapers
 - **OpenRGB:** An RGB perpipheral integration is in progress. Currently testing with the Wormier K87 ([SonixQMK firmware](https://sonixqmk.github.io//SonixDocs/compatible_kb/) supports many brands), Razer Blade 15 keyboard and Viper Mini.
 - **Visual Studio Code:** Install the [extension](https://marketplace.visualstudio.com/items?itemName=dlasagno.wal-theme) and enable the theme in the Settings menu.  
 - **Firefox/Thunderbird:** Install the Pywalfox [extension](https://addons.mozilla.org/en-US/firefox/addon/pywalfox/) and [application](https://github.com/Frewacom/pywalfox). The process for the latter may be complex for those new to Python/Pip. Tested with Librewolf.  
-- **Obsidian:** The theme is temporarily not functional with the newest versions of the template theme, Minimal. When it is, add an entry of your Vault's location in the config file under "obsidian" like the [example config file](https://github.com/rakinishraq/prisma#Configuration) below. For now, the BG/FG colors can be entered into the Settings manually (details in the "And More!" integration below).  
+- **Obsidian:** Add an entry of your Vault's location in the config file under "obsidian" like the [example config file](https://github.com/rakinishraq/prisma#Configuration) below. For unsupported themes, edit the BG/FG colors using the Style Settings plugin usually (details in the "And More!" integration below).  
 - **Disclaimer:** _Usage of BetterDiscord to apply themes is subject to user discretion and risk. It's important to note that custom clients are not permitted under Discord's Terms of Service and may result in user penalties, including account bans. As a developer, I bear no responsibility for any repercussions from using BetterDiscord or any other custom client. Please adhere to Discord's Terms of Service._
 - **Discord:** If you agree to the above, install [BetterDiscord](https://betterdiscord.app/) and enable the theme in the Settings menu.
   - Stanadalone installer and alternate theme available [here](https://github.com/rakinishraq/pywal-discord)
 - **Neovim:** Use this [Neovim theme](https://github.com/AlphaTechnolog/pywal.nvim) for pywal support in WSL and potentially native Windows as well.
 - **Windows 10/11 Theme:** The color scheme of Windows can be set to automatically adapt in Settings -> Colors -> Accent color (set to Automatic).
 - **Alacritty:** An Alacritty configuration file is included but enabling it means you must make all edits in the templates file and run the tool to update. A line-replacing update method is in progress to prevent this.  
-- **Wallpaper Engine:** This paid tool is used for animated (sometimes interactive and audio-reactive) wallpapers as well as setting seperate image wallpapers per monitor automatically. See the last two parts in the [Configuration section](https://github.com/rakinishraq/prisma#configuration).
+- **Wallpaper Engine:** This paid tool is used for animated (sometimes interactive and audio-reactive) wallpapers as well as setting seperate image wallpapers per monitor automatically. . See the last two parts in the [Configuration section](https://github.com/rakinishraq/prisma#configuration).
   - **Disclaimer:** _There are dangerous amounts of anime and NSFW content in the Wallpaper Engine workshop. As a developer, I bear no responsibility for any potential loss of brain cells. Proceed with caution._
   - **"Prisma" Playlist:** Save all your Wallpaper Engine favorites into a playlist named "Prisma" and the random/daily functions will add them to the random choice pool/collective library.
   - **Wallpaper folder:** Use a folder of photo/video sets of wallpapers for different monitor resolutions. For video files, the first frame is used for scheme generation and used with a skeleton WE project. For images, they're converted into full WE projects.
@@ -55,12 +55,12 @@ Edit the new C:\Users\USER\AppData\Local\prisma\config.json file with any text e
     {  
         "alacritty.txt": "C:/Users/USER/AppData/Roaming/alacritty/alacritty.yml",  
         "discord.txt": "C:/Users/USER/AppData/Roaming/BetterDiscord/themes/pywal-discord-default.theme.css",  
-        "obsidian.txt": "C:/Users/USER/Documents/Notes/.obsidian/themes/Minimal.css"  
+        "obsidian.txt": "C:/Users/USER/Documents/Notes/.obsidian/themes/pywal.css"  
     },  
   
     "wallpapers": "D:/Gallery/Wallpapers",  
   
-    "wal_engine": "C:/Program Files (x86)/Steam/steamapps/common/Wallpaper Engine",  
+    "wal_engine": "C:/Program Files (x86)/Steam/steamapps/common/wallpaper_engine",  
     "monitors": ["2560x1080", "1920x1080"],  
 
     "wsl": "Manjaro"  
@@ -122,7 +122,7 @@ The respective licenses are in the [repo resources folder](https://github.com/ra
 
 - Discord template from [pywal-discord](https://github.com/FilipLitwora/pywal-discord) d12972d by FilipLitwora (GNU General Public License v3.0)  
   - changes: colors of theme subsituted in theme css file
-- Obsidian template from [Minimal Obsidian](https://github.com/kepano/obsidian-minimal) 4.3.5 by kepano (MIT License)  
+- Obsidian template from [pywal-obsidianmd](https://github.com/poach3r/pywal-obsidianmd) by poach3r (unlicensed)  
 - fallback wallpaper binary from [win-wallpaper](https://github.com/sindresorhus/win-wallpaper) by sindresorhus (MIT License)  
 - Alacritty template from [alacritty](https://github.com/alacritty/alacritty) by The Alacritty Project (Apache License, Version 2.0)  
   - changes: colors of tomorrow night theme subsituted in default config file

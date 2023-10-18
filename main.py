@@ -22,6 +22,7 @@ config_path = data_path+"/config.json"
 template_path = data_path+"/templates"
 licenses_path = data_path+"/licenses"
 tmp_path = home+"/AppData/Local/Temp"
+batch_path = tmp_path+"/wallpaper.bat"
 config = {}
 
 pic_ext = ["png", "jpg"]
@@ -204,7 +205,7 @@ def wal_engine(wals):
     print("\n\t".join(["Selected wallpapers:"]+wals))
     img = None
     fallpaper(resource("black.png"))
-    cmd("taskkill /f /im wallpaper32.exe")
+    cmd("taskkill /im wallpaper32.exe")
 
     for w in range(len(wals)):
         wal = path.abspath(wals[w])
@@ -262,12 +263,14 @@ def wal_engine(wals):
         if img: # set colors
             gen_colors(img)
             img = None
-        Popen(["powershell.exe", "&", # set wallpaper
-            '"'+config["wal_engine"]+"/wallpaper32.exe\"", "-control",
-            "openWallpaper", "-monitor", str(w), "-file", '"'+project+'"'],
-            stderr=DEVNULL).wait()
+        
         print("Wallpaper Engine: Setting wallpaper for monitor "+str(w))
+        _c = ['"'+config["wal_engine"]+"/wallpaper32.exe\"", "-control", "openWallpaper", "-monitor", str(w), "-file", '"'+project+'"']
+        with open(batch_path, "w") as bf:
+            bf.write(' '.join(_c))
+        Popen(_c := ["cmd", "/c", batch_path])
         sleep(3)
+        print("Done")
         if source: # delete temp project.json for video
             remove(project)
 
@@ -385,7 +388,7 @@ def main(test_config=None, test_args=None):
                 c.write("|".join([str(dt.today())]+inputs))
             print("Saved wallpapers to: "+cache_path)
         else:
-            "Save flag ignored"
+            print("Save flag ignored in this case")
 
 if __name__ == "__main__":
     main()
