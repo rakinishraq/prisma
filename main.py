@@ -20,6 +20,7 @@ data_path = home+"/AppData/Local/prisma"
 cache_path = data_path+"/wallpaper.txt"
 config_path = data_path+"/config.json"
 template_path = data_path+"/templates"
+licenses_path = data_path+"/licenses"
 tmp_path = home+"/AppData/Local/Temp"
 config = {}
 
@@ -139,17 +140,21 @@ def gen_colors(img):
             pywal.colors.saturate_colors(
                 getattr(sys.modules["pywal.backends.wal"], "get")(img, False),
                 ""), img)
-    print("Generated Windows colors.json")
+    print("Generated Windows pywal colors.json")
 
     # pywalfox update
-    with open(home+"/.cache/wal/colors.json", "w") as cj:
-        print("Updated pywal's colors.json for Pywalfox")
-        cj.write(dumps(wal))
+    print("Full color scheme in: " + (json_path := home+"/.cache/wal/colors.json"))
+    with open(json_path, "w") as cj:
+        print("Updated pywal's colors.json path format for Pywalfox")
+        cj.write(dumps(wal, indent=4))
     cmd("python -m pywalfox update")
 
+    # process color scheme
     wal["colors"].update(wal["special"])
     wal = wal["colors"]
-    print("Fetched/generated color scheme")
+    print("Processed color scheme")
+    print("\n\tBackground: %s\n\tForeground: %s\n" % \
+          (wal["background"], wal["foreground"]))
 
     # OpenRGB
     try:
@@ -176,8 +181,10 @@ def gen_colors(img):
         with open(template, encoding='cp850') as base:
             base = base.read()
             for k in wal.keys():
+                # process replacement of base, ex. {color0}
                 base = base.replace("{%s}"%k, wal[k])
                 if '{'+k+'.' in base:
+                    # process replacement of component, ex. {color0.r}/{color0.h}
                     rgb = tuple(int(wal[k].strip("#")[i:i+2], 16) for i in (0, 2, 4))
                     hls = rgb_to_hls(*[j/255.0 for j in rgb])
                     hls = [str(hls[i]*100)+"%" if i > 0 else hls[i]*360 for i in range(3)]
@@ -222,10 +229,10 @@ def wal_engine(wals):
                 img = wals[0]
             rand = str(rchoice(range(100)))
             folder = tmp_path+"/picture/"+rand
-            copytree(resource("project_template"), folder)
+            copytree(resource("project_template"), folder) # duplicate project
             copy(wal, folder+"/materials/picture.png") # TODO: jpg/bmp
             _h, _w, _ = cv2.imread(wal).shape
-            with open(folder+"/scene.json", "r+") as f:
+            with open(folder+"/scene.json", "r+") as f: # modify scene.json
                 t = f.read().replace("W2", str(_w/2)).replace("H2", str(_h/2))
                 f.seek(0)
                 f.write(t.replace("W", str(_w)).replace("H", str(_h)))
@@ -285,7 +292,9 @@ def main(test_config=None, test_args=None):
         if not path.isdir(data_path):
             mkdir(data_path)
         if not path.isdir(template_path):
-                copytree(resource("templates"), template_path)
+            copytree(resource("templates"), template_path)
+        if not path.isdir(license_path):
+            copytree(resource("licenses"), license_path)
         if not path.isfile(config_path):
             with open(resource("config_template.json")) as c:
                 config_content = c.read().replace("HOME", home)

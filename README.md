@@ -22,12 +22,15 @@ To make changes to the generated config file, like to enable animated wallpapers
 
 - **OpenRGB:** An RGB perpipheral integration is in progress. Currently testing with the Wormier K87 ([SonixQMK firmware](https://sonixqmk.github.io//SonixDocs/compatible_kb/) supports many brands), Razer Blade 15 keyboard and Viper Mini.
 - **Wallpaper Engine:** This paid tool is used for animated (sometimes interactive and audio-reactive) wallpapers as well as setting seperate image wallpapers per monitor auutomatically. See the last two parts in the [Configuration section](https://github.com/rakinishraq/prisma#configuration).
-  - The Windows accent feature in  can be turned off in favor of Windows' automatic accent colors, detailed under "Windows 10/11 Theme" below.
+  - **All-Black Theme?** This tool sets the wallpaper behind Wallpaper Engine as all-black currently. An alternative is in progress since this (1) causes Window's automatic accent color (details in the "Windows 10/11 Theme" integration below) to be all-black and (2) running the tool again sets the template-based schemes as all-black.  
+  1. For now, use the "Start with Windows in High Priority" and "Adjust Windows color" options in Wallpaper Engine's General tab in Settings to combat the former issue.  
+  2. To prevent the latter issue, use the "--save" argument and "saved" variables (further details in the [CLI Usage section](https://github.com/rakinishraq/prisma#cli-usage) below).  
 - **Visual Studio Code:** Install the [extension](https://marketplace.visualstudio.com/items?itemName=dlasagno.wal-theme) and enable the theme in the Settings menu.  
 - **Firefox/Thunderbird:** Install the Pywalfox [extension](https://addons.mozilla.org/en-US/firefox/addon/pywalfox/) and [application](https://github.com/Frewacom/pywalfox). The process for the latter may be complex for those new to Python/Pip. Tested with Librewolf.  
-- **Obsidian:** The theme is temporarily not functional with the newest versions of the template theme, Minimal. When it is, add an entry of your Vault's location in the config file under "obsidian" like the [example config file](https://github.com/rakinishraq/prisma#Configuration) below.  
-- **Disclaimer:** _Usage of BetterDiscord to apply themes is subject to user discretion and risk. It's important to note that custom clients are not permitted under Discord's Terms of Service and may result in user penalties, including account bans. As a developer, I bear no responsibility for any repercussions from using BetterDiscord. Please adhere to Discord's Terms of Service._
+- **Obsidian:** The theme is temporarily not functional with the newest versions of the template theme, Minimal. When it is, add an entry of your Vault's location in the config file under "obsidian" like the [example config file](https://github.com/rakinishraq/prisma#Configuration) below. For now, the BG/FG colors can be entered into the Settings manually (details in the "And More!" integration below).  
+- **Disclaimer:** _Usage of BetterDiscord to apply themes is subject to user discretion and risk. It's important to note that custom clients are not permitted under Discord's Terms of Service and may result in user penalties, including account bans. As a developer, I bear no responsibility for any repercussions from using BetterDiscord or any other custom client. Please adhere to Discord's Terms of Service._
 - **Discord:** If you agree to the above, install [BetterDiscord](https://betterdiscord.app/) and enable the theme in the Settings menu.
+  - Stanadalone installer and alternate theme available [here](https://github.com/rakinishraq/pywal-discord)
 - **Neovim:** Use this [Neovim theme](https://github.com/AlphaTechnolog/pywal.nvim) for pywal support in WSL and potentially native Windows as well.
 - **Windows 10/11 Theme:** The color scheme of Windows can be set to automatically adapt in Settings -> Colors -> Accent color (set to Automatic).
 - **Alacritty:** An Alacritty configuration file is included but enabling it means you must make all edits in the templates file and run the tool to update. A line-replacing update method is in progress to prevent this.  
@@ -35,6 +38,7 @@ To make changes to the generated config file, like to enable animated wallpapers
   - **Zathura:** Install and run [this script](https://github.com/GideonWolfe/Zathura-Pywal) within WSL to generate a new themed zathurarc file.
   - wpgtk depends on the imagemagick and ffmpeg packages
   - There's probably a similar process for many other Linux apps that sync with Linux's pywal theme files, which wpgtk generates. This was tested with GWSL on feh and zathura.
+- **And More!** The background and foreground colors are shown in the command line output and the full color scheme is available in C:\Users\USER\\.cache\wal\colors.json to manually input in any app.
   
   
 ## Configuration  
@@ -109,11 +113,12 @@ optional arguments:
   
   
   
-## Credits (licenses distributed with project)  
+## Credits  
   
+The respective licenses are in the [repo resources folder](https://github.com/rakinishraq/prisma/tree/main/resources/licenses) and copied into the Local Appdata folder.
+
 - Discord template from [pywal-discord](https://github.com/FilipLitwora/pywal-discord) d12972d by FilipLitwora (GNU General Public License v3.0)  
   - changes: colors of theme subsituted in theme css file
-  - stanadalone installer and alternate theme available [here](https://github.com/rakinishraq/pywal-discord)
 - Obsidian template from [Minimal Obsidian](https://github.com/kepano/obsidian-minimal) 4.3.5 by kepano (MIT License)  
 - fallback wallpaper binary from [win-wallpaper](https://github.com/sindresorhus/win-wallpaper) by sindresorhus (MIT License)  
 - Alacritty template from [alacritty](https://github.com/alacritty/alacritty) by The Alacritty Project (Apache License, Version 2.0)  
