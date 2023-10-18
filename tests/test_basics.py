@@ -1,5 +1,6 @@
 from .. import main
 
+# placeholders for major functions
 class TestBasics:
     def test_randomwal(self):
         assert main.random_wal

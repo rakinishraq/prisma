@@ -310,8 +310,7 @@ def main(test_config=None, test_args=None):
     parser.add_argument("-s", "--save", action="store_true",
             help="Save input as today's wallpaper.")
     parser.add_argument("input", default=[], nargs="*",
-            help="Input image/video/project.json file. "
-            "Defaults to today's wallpaper.")
+            help="Input image/video/project.json file.")
     parser.add_argument("-co", "--colors-only", action="store_true",
             help="Ignores all other inputs and sets colors with "
                 "current Windows wallpaper.")

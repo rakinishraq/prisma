@@ -20,13 +20,16 @@ To make changes to the generated config file, like to enable animated wallpapers
   
 ## Integrations
 
-- **Wallpaper Engine:** paid
+- **OpenRGB:** An RGB perpipheral integration is in progress. Currently testing with the Wormier K87 ([SonixQMK firmware](https://sonixqmk.github.io//SonixDocs/compatible_kb/) supports many brands), Razer Blade 15 keyboard and Viper Mini.
+- **Wallpaper Engine:** This paid tool is used for animated (sometimes interactive and audio-reactive) wallpapers as well as setting seperate image wallpapers per monitor auutomatically. See the last two parts in the [Configuration section](https://github.com/rakinishraq/prisma#configuration).
+  - The Windows accent feature in  can be turned off in favor of Windows' automatic accent colors, detailed under "Windows 10/11 Theme" below.
 - **Visual Studio Code:** Install the [extension](https://marketplace.visualstudio.com/items?itemName=dlasagno.wal-theme) and enable the theme in the Settings menu.  
 - **Firefox/Thunderbird:** Install the Pywalfox [extension](https://addons.mozilla.org/en-US/firefox/addon/pywalfox/) and [application](https://github.com/Frewacom/pywalfox). The process for the latter may be complex for those new to Python/Pip. Tested with Librewolf.  
 - **Obsidian:** The theme is temporarily not functional with the newest versions of the template theme, Minimal. When it is, add an entry of your Vault's location in the config file under "obsidian" like the [example config file](https://github.com/rakinishraq/prisma#Configuration) below.  
 - **Disclaimer:** _Usage of BetterDiscord to apply themes is subject to user discretion and risk. It's important to note that custom clients are not permitted under Discord's Terms of Service and may result in user penalties, including account bans. As a developer, I bear no responsibility for any repercussions from using BetterDiscord. Please adhere to Discord's Terms of Service._
 - **Discord:** If you agree to the above, install [BetterDiscord](https://betterdiscord.app/) and enable the theme in the Settings menu.
 - **Neovim:** Use this [Neovim theme](https://github.com/AlphaTechnolog/pywal.nvim) for pywal support in WSL and potentially native Windows as well.
+- **Windows 10/11 Theme:** The color scheme of Windows can be set to automatically adapt in Settings -> Colors -> Accent color (set to Automatic).
 - **Alacritty:** An Alacritty configuration file is included but enabling it means you must make all edits in the templates file and run the tool to update. A line-replacing update method is in progress to prevent this.  
 - **WSL GTK/QT:** Set the WSL variable as the name of your WSL OS name if you want [wpgtk](https://github.com/deviantfero/wpgtk) compatibility (more readable terminal color scheme as well as GTK/QT and other Linux GUI app theming). All Pywal supported apps should update automatically, too. If WSL is not installed, leave it empty.  
   - **Zathura:** Install and run [this script](https://github.com/GideonWolfe/Zathura-Pywal) within WSL to generate a new themed zathurarc file.
@@ -64,12 +67,13 @@ Edit the new C:\Users\USER\AppData\Local\prisma\config.json file with any text e
 - In the template files, {colorname} is replaced with the hex code for a color or a HSL/RGB component like {colorname.r} for Red.  
 - The available color names are color0, color1...color15, background, foreground and cursor. The available components are Hue (0-360), Saturation (0%-100%), Lightness (0%-100%), Red (0-255), Green (0-255) and Blue (0-255).  
 ### Wallpaper Engine
-- Set wal_engine to your Wallpaper Engine installation path. If left blank, Prisma will use win_wallpaper.exe as a fallback to set a single static wallpaper across all monitors (no animated or unique multi-monitor wallpaper support).  
+- The provided value in the config above is the default installation path if purchased from Steam.
+- Set wal_engine to your Wallpaper Engine installation path. If left blank, Prisma will use win_wallpaper.exe as a fallback to set a single static wallpaper across all monitors (no animated or unique multi-monitor wallpaper support without Wallpaper Engine).  
 - The monitors variable should contain all your monitors in the order they appear in Wallpaper Engine, represented by their resolutions (so if you have multiple with the same resolution, repeat it). This variable isn't used if Wallpaer Engine isn't installed.  
 ### Photo/Video Wallpapers
-- The wallpapers path should contain photos and videos to be randomly selected from daily. If you want to use different files for different resolution monitors, append \_WIDTHxHEIGHT to the end of the filename (like painter\_1920x1080.png and painter\_2560x1080.png). This currently supports JPGs, PNGs and MP4s. Files starting with exclamation points and all subfolders are ignored.  
+- The wallpapers path should contain photos and videos to be randomly selected from daily. If you want to use different files for different resolution monitors, append \_WIDTHxHEIGHT to the end of the filename (like painter\_1920x1080.png and painter\_2560x1080.png). This currently supports JPGs, PNGs and MP4s. Files starting with exclamation points and all subfolders are ignored.  More details in the [Common Uses section](https://github.com/rakinishraq/prisma#common-uses) below.  
 - You must include variants for all resolutions if using multiple files. Otherwise, name the single file regularly (like painter.png).  
-  
+- If you don't want to use Wallpaper Engine but want to set seperate image wallpapers per monitor, you'd need to manually do so in the Windows settings. This seems to be a limitation not with the wallpaper binary but with Windows' command line abilities.  
   
   
   
@@ -78,9 +82,9 @@ Edit the new C:\Users\USER\AppData\Local\prisma\config.json file with any text e
 ```  
 usage: prisma.exe [-h] [-r] [-s] [-co] [input ...]  
   
-Generates color scheme and applies to templates. If no inputs are provided: a  
-new wallpaper is selected daily and saved (generates colors from the currently  
-set Windows wallpaper if Wallpaper Engine isn't set)  
+Generates color scheme from animated (Wallpaper Engine) or static (Windows)
+wallpapers and applies to templates. If no inputs are provided, this uses the
+current Windows wallpaper (same as --colors-only).
   
 positional arguments:  
   input               Input image/video/project.json file. Defaults to today's  
