@@ -21,3 +21,4 @@ pywin32-ctypes
 requests
 tqdm
 urllib3
+pytest

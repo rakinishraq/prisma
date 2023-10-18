@@ -3,10 +3,11 @@
     {
         "discord": "HOME/AppData/Roaming/BetterDiscord/themes/pywal-discord-default.theme.css"
     },
-    "wsl": "",
 
     "wallpapers": "E:/Gallery/Wallpapers",
 
     "wal_engine": "",
-    "monitors": ["1920x1080"]
+    "monitors": ["1920x1080"],
+    
+    "wsl": ""
 }

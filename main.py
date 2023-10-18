@@ -3,7 +3,7 @@ from colorsys import rgb_to_hls
 from re import search as re
 import pywal.backends.wal
 from time import sleep
-from subprocess import Popen, check_output, DEVNULL
+from subprocess import Popen, check_output, DEVNULL, CalledProcessError
 from random import choice as rchoice
 from json import loads, dumps
 from os import path, mkdir, listdir, remove
@@ -13,7 +13,7 @@ import pywal
 import cv2
 import moviepy.video.io.ImageSequenceClip as sequence
 from shutil import rmtree, copytree, copy
-from rgb import rgb_keyboard
+#from rgb import rgb_keyboard
 
 home = path.expanduser("~").replace("\\", "/")
 data_path = home+"/AppData/Local/prisma"
@@ -21,19 +21,25 @@ cache_path = data_path+"/wallpaper.txt"
 config_path = data_path+"/config.json"
 template_path = data_path+"/templates"
 tmp_path = home+"/AppData/Local/Temp"
-pic_ext = ["png", "jpg"]
-vid_ext = ["mp4"]
-cmd = lambda c,out=DEVNULL: Popen(c, stderr=DEVNULL, stdout=out, shell=True).wait() # TODO: use more
-fallpaper = lambda f: Popen(["powershell.exe", "&",
-    '\"'+resource("wallpaper.exe")+'"', '"'+f+'"'], stderr=DEVNULL)
-convert = lambda i: "/mnt/"+i[0].lower()+i[2:].replace("\\", "/")
 config = {}
 
+pic_ext = ["png", "jpg"]
+vid_ext = ["mp4"]
 
-def fatal(m, p=None):
-    print(m+'\n')
-    if p:
-        p.print_help()
+# silently run command
+cmd = lambda c,out=DEVNULL: Popen(c, stderr=DEVNULL, stdout=out, shell=True).wait()
+# set Windows wallpaper using fallback binary
+fallpaper = lambda f: Popen(["powershell.exe", "&",
+    '\"'+resource("wallpaper.exe")+'"', '"'+f+'"'], stderr=DEVNULL)
+# convert path to Linux format for WPG
+convert = lambda i: "/mnt/"+i[0].lower()+i[2:].replace("\\", "/")
+
+
+def fatal(msg, parser=None):
+    """Prints message then ends program"""
+    print(msg+'\n')
+    if parser: # print parser help message
+        parser.print_help()
     sys.exit(2)
 
 
@@ -58,7 +64,6 @@ def random_wal():
 
     Returns (list): wallpaper paths"""
 
-    # TODO: rewrite
     choices = []
     
     # wallpapers without *.json, !*, double extensions or directories
@@ -121,12 +126,11 @@ def daily():
     return choice
 
 
-def gen_colors(img, port, replace=False):
+def gen_colors(img):
     """Generates color scheme from image and applies to templates.
 
     Parameters:
         img (string): path leading to input image
-        replace (bool): ignores existing color file
     """
     
     # get/create color scheme
@@ -135,19 +139,27 @@ def gen_colors(img, port, replace=False):
             pywal.colors.saturate_colors(
                 getattr(sys.modules["pywal.backends.wal"], "get")(img, False),
                 ""), img)
-    with open(data_path+"/colors.json", "w") as cj:
-        print("Generated Windows colors.json")
+    print("Generated Windows colors.json")
+
+    # pywalfox update
+    with open(home+"/.cache/wal/colors.json", "w") as cj:
+        print("Updated pywal's colors.json for Pywalfox")
         cj.write(dumps(wal))
+    cmd("python -m pywalfox update")
+
     wal["colors"].update(wal["special"])
     wal = wal["colors"]
     print("Fetched/generated color scheme")
 
+    # OpenRGB
     try:
-        rgb_keyboard(wal["foreground"], wal["background"], wal["color4"], port)
-        print("Applied OpenRGB colors")
+        #rgb_keyboard(wal["foreground"], wal["background"], wal["color4"], port)
+        #print("Applied OpenRGB colors")
+        print("OpenRGB integration temporarily disabled")
     except Exception as e:
         print("OpenRGB error: " + str(e))
 
+    # WSL / wpgtk
     if config["wsl"]: # wpgtk
         wsl = "wsl -d " + config["wsl"]
         cmd(wsl + " -- wpg -s \"%s\"" % (img := convert(img)))
@@ -177,7 +189,7 @@ def gen_colors(img, port, replace=False):
         print("Applied %s template" % base_name)
 
 
-def wal_engine(wals, port):
+def wal_engine(wals):
     """Apply wallpapers to Wallpaper Engine and pass first one's
     file/still/thumbnail path to gen_colors()
     """
@@ -241,7 +253,7 @@ def wal_engine(wals, port):
                 p.write(t.replace("FILE", source))
 
         if img: # set colors
-            gen_colors(img, port)
+            gen_colors(img)
             img = None
         Popen(["powershell.exe", "&", # set wallpaper
             '"'+config["wal_engine"]+"/wallpaper32.exe\"", "-control",
@@ -254,31 +266,45 @@ def wal_engine(wals, port):
 
 
 
-def main():
+def main(test_config=None, test_args=None):
     """Process flags and inputs."""
 
+    # check if imagemagick installed to path
+    try:
+        check_output(["where", "magick"])
+    except CalledProcessError:
+        try:
+            check_output(["where", "montage"])
+        except CalledProcessError:
+            fatal("Imagemagick isn't installed to system path. Check README.")
 
-    # make data folder and config if not exist
+
     global config
-    if not path.isdir(data_path):
-        mkdir(data_path)
-    if not path.isdir(template_path):
-            copytree(resource("templates"), template_path)
-    if not path.isfile(config_path):
-        with open(resource("config_template.json")) as c:
-            config_content = c.read().replace("HOME", home)
-        with open(config_path, "w") as c:
-            c.write(config_content)
-        fatal("Config file created in %s.\nEdit then rerun." % config_path)
+    if not test_config:
+        # make data folder and config if not exist
+        if not path.isdir(data_path):
+            mkdir(data_path)
+        if not path.isdir(template_path):
+                copytree(resource("templates"), template_path)
+        if not path.isfile(config_path):
+            with open(resource("config_template.json")) as c:
+                config_content = c.read().replace("HOME", home)
+            with open(config_path, "w") as c:
+                c.write(config_content)
+            print("Config file created in %s.\n" % config_path
+                  "Edit if desired then run this tool again.\n")
+            input("Press Enter to exit.")
+        else:
+            with open(config_path) as c:
+                config_content = c.read()
+        config = loads(config_content)
+        # TODO: config validity checks
     else:
-        with open(config_path) as c:
-            config_content = c.read()
-    config = loads(config_content)
-    # TODO: config validity checks
+        config = test_config
 
     # parse arguments
     parser = Parser()
-    parser.description = "Generates color scheme and applies to templates. If no inputs are provided: a new wallpaper is selected daily and saved (generates colors from the currently set Windows wallpaper if Wallpaper Engine isn't set)"
+    parser.description = "Generates color scheme from animated (Wallpaper Engine) or static (Windows) wallpapers and applies to templates. If no inputs are provided, this uses the current Windows wallpaper (same as --colors-only)."
     parser.add_argument("-r", "--random", action="store_true",
             help="Load random wallpaper. Input file is then ignored.")
     parser.add_argument("-s", "--save", action="store_true",
@@ -288,57 +314,51 @@ def main():
             "Defaults to today's wallpaper.")
     parser.add_argument("-co", "--colors-only", action="store_true",
             help="Ignores all other inputs and sets colors with "
-                "main monitor's picture wallpaper.")
+                "current Windows wallpaper.")
+    parser.add_argument("-d", "--daily", action="store_true",
+            help="Select a random wallpaper if new day and save it")
     parser.add_argument("-p", "--port", type=int, default=6742,
             help="OpenRGB port. Default is 6742, like OpenRGB's default.")
-
-    args = parser.parse_args([
-        [r"E:\Gallery\Wallpapers\kokomi_2560x1080.mp4", r"E:\Gallery\Wallpapers\kokomi_1920x1080.mp4"],
-        [r"C:\Programs\Wallpaper Engine\projects\myprojects\1451642975_oldman_samurai\project.json"],
-        [r"E:\Gallery\Wallpapers\super_meat_boy_2560x1080.png", r"E:\Gallery\Wallpapers\super_meat_boy_1920x1080.png"],
-        ["-r"],
-        None
-    ][-1])
+    args = parser.parse_args(test_args)
 
     # handle arguments
     inputs = [s.replace("\\", "/").strip() for s in args.input]
-    if args.colors_only:
-        gen_colors(home+"/AppData/Roaming/Microsoft/Windows/Themes/TranscodedWallpaper", True)
+    current_wal = home+"/AppData/Roaming/Microsoft/Windows/Themes/TranscodedWallpaper"
+    if args.colors_only: # if colors_only, ignore all other args
+        gen_colors(current_wal)
         fatal("Done.")
-    elif args.random:
+    elif args.random: # if colors_only false and random true, ignore all other args
         inputs = random_wal()
-    elif not inputs:
-        if config["wal_engine"]:
-            inputs = daily()
-            args.save = True
-        else:
-            gen_colors(home+"/AppData/Roaming/Microsoft/Windows/Themes/TranscodedWallpaper")
-            fatal("Done.")
-    else:
+    elif not inputs: # no args and no inputs = same as colors_only
+        gen_colors(current_wal)
+        fatal("Done.")
+    else: # no args only inputs
         for fl in inputs:
             s = pic_ext + ((vid_ext+["json"]) if config["wal_engine"] else [])
             if not (path.isfile(fl) and fl[fl.rfind(".")+1:] in s):
                 fatal("Invalid/unsupported file input: " + fl, parser)
 
-    # process inputs
+    # create/clear temp directory
     if path.isdir(rm := tmp_path+"/picture"):
         for i in listdir(rm):
             rmtree(rm+'/'+i)
     else:
         mkdir(rm)
+    
+    # process inputs
     if len(inputs) == 1:
         if config["wal_engine"]:
             inputs *= len(config["monitors"])
-            wal_engine(inputs, args.port)
+            wal_engine(inputs)
         else:
-            fallpaper(inputs[0])
             print("Using fallback wallpaper binary")
+            fallpaper(inputs[0])
     else:
         if not config["wal_engine"]:
             fatal("Wallpaper Engine required for multiple inputs.", parser)
         if len(inputs) != len(config["monitors"]):
             fatal("Input one wallpaper or equal to number of monitors.", parser)
-        wal_engine(inputs, args.port)
+        wal_engine(inputs)
 
     # save
     if args.save:
