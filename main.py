@@ -291,8 +291,8 @@ def main(test_config=None, test_args=None):
                 config_content = c.read().replace("HOME", home)
             with open(config_path, "w") as c:
                 c.write(config_content)
-            print("Config file created in %s.\n" % config_path
-                  "Edit if desired then run this tool again.\n")
+            print("Config file created in %s.\n"
+                  "Edit if desired then run this tool again.\n" % config_path)
             input("Press Enter to exit.")
         else:
             with open(config_path) as c:
