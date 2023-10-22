@@ -20,7 +20,7 @@ To make changes to the generated config file, like to enable animated wallpapers
   
 ## Integrations
 
-- **OpenRGB:** An RGB perpipheral integration is in progress. Currently testing with the Wormier K87 ([SonixQMK firmware](https://sonixqmk.github.io//SonixDocs/compatible_kb/) supports many brands), Razer Blade 15 keyboard and Viper Mini.
+- **OpenRGB:** An RGB perpipheral integration is in progress. Currently testing with the Wormier K87 ([SonixQMK firmware](https://sonixqmk.github.io//SonixDocs/compatible_kb/) supports many brands), Razer Blade 15 keyboard and Viper Mini. For now, iCue and Chroma support is available in Wallpaper Engine.
 - **Visual Studio Code:** Install the [extension](https://marketplace.visualstudio.com/items?itemName=dlasagno.wal-theme) and enable the theme in the Settings menu.  
 - **Firefox/Thunderbird:** Install the Pywalfox [extension](https://addons.mozilla.org/en-US/firefox/addon/pywalfox/) and [application](https://github.com/Frewacom/pywalfox). The process for the latter may be complex for those new to Python/Pip. Tested with Librewolf.  
 - **Obsidian:** Add an entry of your Vault's location in the config file under "obsidian" like the [example config file](https://github.com/rakinishraq/prisma#Configuration) below. For unsupported themes, edit the BG/FG colors using the Style Settings plugin usually (details in the "And More!" integration below).  
