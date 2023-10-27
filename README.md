@@ -68,6 +68,7 @@ Edit the new C:/Users/USER/AppData/Local/prisma/config.json file with any text e
 ### Formatting
 - Paths must use "/", not the usual Windows "\\".  
 - Each line in the templates section is formatted with the template filename on the left and the target file to replace on the right.  
+- Every line except the last one must end with a comma, including within curly brackets.
 ### Custom Templates
 - They default templates (Alacritty, Discord and Obsidian) are located in the "templates" folder next to this config file.
 - In the template files, {colorname} is replaced with the hex code for a color or a HSL/RGB component like {colorname.r} for Red.  
