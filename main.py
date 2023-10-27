@@ -204,7 +204,7 @@ def wal_engine(wals):
 
     print("\n\t".join(["Selected wallpapers:"]+wals))
     img = None
-    fallpaper(resource("black.png"))
+    if config["wal_engine_black"]: fallpaper(resource("black.png"))
     cmd("taskkill /im wallpaper32.exe")
 
     for w in range(len(wals)):

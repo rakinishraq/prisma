@@ -1,6 +1,6 @@
 .theme-dark {
     --background-primary: {color0};
-    --background-primary-alt: {color6};
+    --background-primary-alt: {color0};
     --background-accent: {color2};
     --background-secondary: {color0};
     --background-secondary-alt: {color0};

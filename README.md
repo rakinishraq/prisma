@@ -35,9 +35,6 @@ To make changes to the generated config file, like to enable animated wallpapers
   - **"Prisma" Playlist:** Save all your Wallpaper Engine favorites into a playlist named "Prisma" and the random/daily functions will add them to the random choice pool/collective library.
   - **Wallpaper folder:** Use a folder of photo/video sets of wallpapers for different monitor resolutions. For video files, the first frame is used for scheme generation and used with a skeleton WE project. For images, they're converted into full WE projects.
     - Do not add these to Prisma playlist as they are replaced and this folder's contents are part of the random choice pool already.
-  - **All-Black Theme?** This tool sets the wallpaper behind Wallpaper Engine as all-black currently. An alternative is in progress since this (a) causes Window's automatic accent color (details in the "Windows 10/11 Theme" integration below) to be all-black and (b) running the tool again sets the template-based schemes as all-black.  
-    1. For now, use the "Start with Windows in High Priority" and "Adjust Windows color" options in Wallpaper Engine's General tab in Settings to combat the former issue.  
-    2. To prevent the latter issue, use the "--save" argument and "saved" variables (further details in the [CLI Usage section](https://github.com/rakinishraq/prisma#cli-usage) below).  
 - **WSL GTK/QT:** Set the WSL variable as the name of your WSL OS name if you want [wpgtk](https://github.com/deviantfero/wpgtk) compatibility (more readable terminal color scheme as well as GTK/QT and other Linux GUI app theming). All Pywal supported apps should update automatically, too. If WSL is not installed, leave it empty.  
   - **Zathura:** Install and run [this script](https://github.com/GideonWolfe/Zathura-Pywal) within WSL to generate a new themed zathurarc file.
   - There's probably a similar process for many other Linux apps that sync with Linux's pywal theme files, which wpgtk generates. This was tested with GWSL on feh and zathura.
@@ -60,7 +57,8 @@ Edit the new C:/Users/USER/AppData/Local/prisma/config.json file with any text e
   
     "wallpapers": "D:/Gallery/Wallpapers",  
   
-    "wal_engine": "C:/Program Files (x86)/Steam/steamapps/common/wallpaper_engine",  
+    "wal_engine": "C:/Program Files (x86)/Steam/steamapps/common/wallpaper_engine",
+    "wal_engine_black": false,  
     "monitors": ["2560x1080", "1920x1080"],  
 
     "wsl": "Manjaro"  
@@ -77,7 +75,10 @@ Edit the new C:/Users/USER/AppData/Local/prisma/config.json file with any text e
 ### Wallpaper Engine
 - The provided value in the config above is the default installation path if purchased from Steam.
 - Set wal_engine to your Wallpaper Engine installation path. If left blank, Prisma will use win_wallpaper.exe as a fallback to set a single static wallpaper across all monitors (no animated or unique multi-monitor wallpaper support without Wallpaper Engine).  
-- The monitors variable should contain all your monitors in the order they appear in Wallpaper Engine, represented by their resolutions (so if you have multiple with the same resolution, repeat it). This variable isn't used if Wallpaer Engine isn't installed.  
+- The monitors variable should contain all your monitors in the order they appear in Wallpaper Engine, represented by their resolutions (so if you have multiple with the same resolution, repeat it). This variable isn't used if Wallpaper Engine isn't installed.  
+- This tool sets the wallpaper behind Wallpaper Engine as all-black if "wal_engine_black" is enabled. This is to prevent a different wallpaper showing before Wallpaper Engine has time to start. An alternative is in progress since this (a) causes Window's automatic accent color (details in the "Windows 10/11 Theme" integration below) to be all-black and (b) running the tool again sets the template-based schemes as all-black. If you want ot enable this option:
+  1. For now, use the "Start with Windows in High Priority" and "Adjust Windows color" options in Wallpaper Engine's General tab in Settings to combat the former issue.  
+  2. To prevent the latter issue, use the "--save" argument and "saved" variables (further details in the [CLI Usage section](https://github.com/rakinishraq/prisma#cli-usage) below) or only run once.  
 ### Photo/Video Wallpapers
 - The wallpapers path should contain photos and videos to be randomly selected from daily. If you want to use different files for different resolution monitors, append \_WIDTHxHEIGHT to the end of the filename (like painter\_1920x1080.png and painter\_2560x1080.png). This currently supports JPGs, PNGs and MP4s. Files starting with exclamation points and all subfolders are ignored.  More details in the [Common Uses section](https://github.com/rakinishraq/prisma#common-uses) below.  
 - You must include variants for all resolutions of your different monitors if using multiple files. Otherwise, name the single file regularly (like painter.png).  
