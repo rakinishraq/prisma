@@ -4,7 +4,9 @@ Prisma uses [pywal](https://github.com/dylanaraps/pywal/) to generate color sche
   
 This tool was inspired by wpgtk which provides similar functionality in Linux. In it's current state, using Prisma requires basic terminal skill.
   
-Prisma is released under the [GNU General Public License v3.0](COPYING). The summary below is from [tl;drLegal](https://www.tldrlegal.com/license/gnu-general-public-license-v3-gpl-3).
+Prisma is released under the [GNU General Public License v3.0](COPYING).
+  - The author is not responsible for any damage, loss, or issues arising from the use or misuse of this GPL3 licensed software.  
+The summary below is from [tl;drLegal](https://www.tldrlegal.com/license/gnu-general-public-license-v3-gpl-3).
   - You may copy, distribute and modify the software as long as you track changes/dates in source files.
   - Any modifications to or software including (via compiler) GPL-licensed code must also be made available under the GPL along with build & install instructions.
   
@@ -18,6 +20,8 @@ Prisma is released under the [GNU General Public License v3.0](COPYING). The sum
 5. Install any Integrations from the [Integrations section](https://github.com/rakinishraq/prisma#Integrations) right below.  
 
 To make changes to the generated config file, like to enable animated wallpapers or some of the integrations below, use the following [Configuration section](https://github.com/rakinishraq/prisma#configuration).
+
+This is optional if you just want to generate colors for Discord from your static Windows wallpaper. However, Prisma is overkill for this use case so check out my fork of [pywal-discord](https://github.com/rakinishraq/pywal-discord).
   
   
 ## Integrations
@@ -87,8 +91,10 @@ Edit the new C:/Users/USER/AppData/Local/prisma/config.json file with any text e
   1. For now, use the "Start with Windows in High Priority" and "Adjust Windows color" options in Wallpaper Engine's General tab in Settings to combat the former issue.  
   2. To prevent the latter issue, use the "--save" argument and "saved" variables (further details in the [CLI Usage section](https://github.com/rakinishraq/prisma#cli-usage) below) or only run once.  
 ### Photo/Video Wallpapers
-- The wallpapers path should contain photos and videos to be randomly selected from daily. If you want to use different files for different resolution monitors, append \_WIDTHxHEIGHT to the end of the filename (like painter\_1920x1080.png and painter\_2560x1080.png). This currently supports JPGs, PNGs and MP4s. Files starting with exclamation points and all subfolders are ignored.  More details in the [Common Uses section](https://github.com/rakinishraq/prisma#common-uses) below.  
+- The wallpapers path should contain photos and videos to be randomly selected from daily. If you want to use different files for different resolution monitors, append \_WIDTHxHEIGHT to the end of the filename (like painter\_1920x1080.png and painter\_2560x1080.png).
+- JPGs, PNGs and MP4s are currently supported. More details in the [Common Uses section](https://github.com/rakinishraq/prisma#common-uses) below.  
 - You must include variants for all resolutions of your different monitors if using multiple files. Otherwise, name the single file regularly (like painter.png).  
+- Any files with a "!" at the start will be ignored.
 - If you don't want to use Wallpaper Engine but want to set seperate image wallpapers per monitor, you'd need to manually do so in the Windows settings. This seems to be a limitation not with the wallpaper binary but with Windows' command line abilities. However, you can easily use the "--colors-only" argument after.  
   
   
@@ -117,10 +123,21 @@ options:
 
 - `.\prisma.exe -co` fetches your current Windows wallpaper image and generates a color scheme and themes from it. This is useful if you already have a wallpaper that you want to keep.  
 - `.\prisma.exe` is the same as `.\prisma.exe -co`
-- `.\prisma.exe -d` checks if there's already been a wallpaper saved today and loads it if it exists. Otherwise, it randomly picks one from your library (wallpapers folder and the Prisma Wallpaper Engine playlist) and saves it.
-- `.\prisma.exe -r -s` randomly picks a wallpaper from your library and saves it regardless of if one was already selected today. This is useful for skipping a daily wallpaper.  
-- `.\prisma.exe filename.ext -s filename.ext` sets all your wallpapers to that single file and saves it as today's wallpaper. Saving is useful for returning to today's selection after experimenting with other choices or refreshing the Wallpaper Engine project generation after restarting your PC.  
+- `.\prisma.exe -d` checks if there's already been a wallpaper saved today and loads it if it exists. Otherwise, it randomly picks one from your library (wallpapers folder and the Prisma Wallpaper Engine playlist) then then save it.
+- `.\prisma.exe -r -s` randomly picks a wallpaper from your library and saves it regardless of if one was already selected today.  
+- `.\prisma.exe filename.ext -s` sets all your wallpapers to that single file and saves it as today's wallpaper. Saving is useful for returning to today's selection after experimenting with other choices.  
+- `.\prisma.exe saved` retrieves your saved wallpaper regardless of how long ago you saved it. This is useful for reverting your wallpaper/color schemes after experimenting with other choices.
 - `.\prisma.exe filename_2560x1080.ext filename_1920x1080.ext` sets different wallpapers for different wallpapers without saving. The number of inputs must be equal to the number of monitors if there's more than one input.   
+
+For example, if you want to just set all your themes as the wallpaper you have (non-Wallpaper Engine), then simply run the exe or execute `.\prisma.exe` in the command line.
+
+If you want to get a new wallpaper automatically everyday, run `.\prisma.exe -d` at startup. One way to do this is:  
+1. Click Windows+R and enter `shell:startup` to open your Startup folder.
+2. Right-click an empty area in this folder, hover over New and click Shortcut.
+3. Enter `<path to prisma>\prisma.exe -d`, press Next, enter any name and click Finish.
+
+Note: Since Prisma will open Wallpaper Engine if it's not already running, enabling "Start with Windows" in it's Settings is optional. It will just reduce the time you see the static Windows wallpaper running underneath it.
+
   
 
 ## Build Instructions
@@ -129,8 +146,8 @@ This is an optional section for those who want to modify the code and execute us
 1. Clone the repo then open a terminal session in the folder or use `cd <path-to-Prisma>/Prisma`
 2. Execute `python -m venv .venv` to create a virtual environment
 3. Install all the required modules with `./.venv/Scripts/pip.exe install -r requirements.txt`
-4. To run from source: Execute `./LAUNCH <arguments>` or `./.venv/Scripts/python.exe main.py <ARGUMENTS>`
-5. To build into .exe: Execute `./COMPILE` or `./.venv/Scripts/pyinstaller --noconfirm --onefile --console --name "Prisma" --clean --add-data "./resources;resources/" "./main.py"`
+4. To run from source: Execute `./LAUNCH.ps1 <arguments>` or `./.venv/Scripts/python.exe main.py <ARGUMENTS>`
+5. To build into .exe: Execute `./COMPILE.ps1` or `./.venv/Scripts/pyinstaller --noconfirm --onefile --console --name "Prisma" --clean --add-data "./resources;resources/" "./main.py"`
   
   
 ## Credits  

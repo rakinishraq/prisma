@@ -70,25 +70,38 @@ def random_wal():
     
     # wallpapers without *.json, !*, double extensions or directories
     if path.exists(config["wallpapers"]):
-        wals = [i for i in listdir(config["wallpapers"])
-                if path.isfile(config["wallpapers"]+'/'+i)
-                and i.count('.')==1 and not i.startswith("!")
-                and i[i.rindex(".")+1:] in pic_ext+vid_ext]
+        wals = []
+        for i in listdir(config["wallpapers"]):
+            if path.isfile(config["wallpapers"]+'/'+i) and \
+                    i.count('.')==1 and not i.startswith("!") and \
+                    i[i.rindex(".")+1:] in pic_ext+vid_ext:
+                wals.append(i)
         # remove duplicates and resolution/extension suffix
-        choices += list(dict.fromkeys(
-            [i[:i.rindex("_") if re(".*\d*x\d*\..*", i) else i.rindex(".")] for i in wals]))
+        for i in wals:
+            if re(r".*\d*x\d*\..*", i):
+                choices.append(i[:i.rindex("_")])
+            else:
+                choices.append(i[:i.rindex(".")])
+        choices = list(dict.fromkeys(choices))
 
     # get project.json files for prisma playlist items
     if config["wal_engine"]:
         with open(config["wal_engine"]+"/config.json", encoding='cp850') as f:
             f = loads(f.read())
-        for n in range(len(f)):
-            for p in f[n]["general"]["playlists"]:
-                if p["name"] == "Prisma":
-                    choices += [i[:i.rindex("/")]+"/project.json" \
-                        for i in p["items"]]
-                    break
+        for u in f.values():
+            try:
+                for p in u["general"]["playlists"]:
+                    if p["name"] == "Prisma":
+                        for i in p["items"]:
+                            choices.append(i[:i.rindex("/")]+"/project.json")
+                        break
+            except TypeError:
+                pass
+            except KeyError:
+                pass
 
+    if not choices:
+        fatal("No entries in Wallpaper Engine playlist or Wallpaper folder found.")
     choice = rchoice(choices) # choose randomly
 
     ret = [choice] * len(config["monitors"])
@@ -116,7 +129,6 @@ def daily():
 
     Returns (list): wallpaper paths
     """
-
     choice = ""
     if path.isfile(cache_path):
         with open(cache_path) as c:
@@ -154,8 +166,7 @@ def gen_colors(img):
     wal["colors"].update(wal["special"])
     wal = wal["colors"]
     print("Processed color scheme")
-    print("\n\tBackground: %s\n\tForeground: %s\n" % \
-          (wal["background"], wal["foreground"]))
+    print("\n\tBackground: %s\n\tForeground: %s\n" % (wal["background"], wal["foreground"]))
 
     # OpenRGB
     try:
@@ -264,11 +275,12 @@ def wal_engine(wals):
             gen_colors(img)
             img = None
         
-        print("Wallpaper Engine: Setting wallpaper for monitor "+str(w))
-        _c = ['"'+config["wal_engine"]+"/wallpaper32.exe\"", "-control", "openWallpaper", "-monitor", str(w), "-file", '"'+project+'"']
+        print("\nWallpaper Engine: Setting wallpaper for monitor ", w)
+        _c = ['"'+config["wal_engine"]+"/wallpaper32.exe\"", "-control", "openWallpaper",
+              "-monitor", str(w), "-file", '"'+project+'"']
         with open(batch_path, "w") as bf:
             bf.write(' '.join(_c))
-        Popen(_c := ["cmd", "/c", batch_path])
+        Popen(["cmd", "/c", batch_path])
         sleep(3)
         print("Done")
         if source: # delete temp project.json for video
@@ -276,7 +288,7 @@ def wal_engine(wals):
 
 
 
-def main(test_config=None, test_args=None):
+def main(test_args=None, test_config=None):
     """Process flags and inputs."""
 
     # check if imagemagick installed to path
@@ -316,7 +328,8 @@ def main(test_config=None, test_args=None):
 
     # parse arguments
     parser = Parser()
-    parser.description = "Generates color scheme from animated (Wallpaper Engine) or static (Windows) wallpapers and applies to templates.\nDefaults to --colors-only if no arguments provided."
+    parser.description = "Generates color scheme from animated (Wallpaper Engine) or static" \
+        "(Windows) wallpapers and applies to templates.\nDefaults to --colors-only if no arguments provided."
     parser.add_argument("-r", "--random", action="store_true",
             help="load random wallpaper; input file is then ignored")
     parser.add_argument("-s", "--save", action="store_true",
@@ -344,6 +357,9 @@ def main(test_config=None, test_args=None):
         fatal("Done.")
     elif args.random: # if colors_only false and random true, ignore all other args
         inputs = random_wal()
+    elif args.daily: # if colors_only/random false, ignore all other args
+        inputs = daily()
+        args.save = True
     elif not inputs: # no args and no inputs = same as colors_only
         gen_colors(current_wal)
         fatal("Done.")
@@ -353,10 +369,10 @@ def main(test_config=None, test_args=None):
             ext = fl[fl.rfind(".")+1:]
             if not path.isfile(fl): # file exists?
                 fatal("Invalid file input: " + fl, parser)
-            elif not ext in pic_ext+vid_ext+["json"]: # file supported?
-                fatal("Unsupported file input: " + fl, parser)
             elif ext in vid_ext+["json"] and not config["wal_engine"]: # WE installed?
                 fatal("Wallpaper Engine needs to be configured for video/live inputs.")
+            elif not ext in pic_ext+vid_ext+["json"]: # file supported?
+                fatal("Unsupported file input: " + fl, parser)
 
     # create/clear temp directory
     if path.isdir(rm := tmp_path+"/picture"):
@@ -383,12 +399,14 @@ def main(test_config=None, test_args=None):
 
     # save
     if args.save:
-        if not args.colors_only and inputs:
+        if not args.colors_only and inputs or args.daily:
             with open(cache_path, "w") as c:
                 c.write("|".join([str(dt.today())]+inputs))
             print("Saved wallpapers to: "+cache_path)
         else:
             print("Save flag ignored in this case")
+    
+    exit()
 
 if __name__ == "__main__":
     main()
