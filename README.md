@@ -47,7 +47,7 @@ To make changes to the generated config file, like to enable animated wallpapers
   
 ## Configuration  
   
-Edit the new C:\Users\USER\AppData\Local\prisma\config.json file with any text editor. Example:
+Edit the new C:/Users/USER/AppData/Local/prisma/config.json file with any text editor. Example:
   
 ```  
 {  
