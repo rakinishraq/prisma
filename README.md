@@ -144,6 +144,7 @@ Note: Since Prisma will open Wallpaper Engine if it's not already running, enabl
 
 This is an optional section for those who want to modify the code and execute using a virtual environment:
 1. Clone the repo then open a terminal session in the folder or use `cd <path-to-Prisma>/Prisma`
+   - For the former, shift-right click in an empty area in the folder, click Open Powershell window here 
 2. Execute `python -m venv .venv` to create a virtual environment
 3. Install all the required modules with `./.venv/Scripts/pip.exe install -r requirements.txt`
 4. To run from source: Execute `./LAUNCH.ps1 <arguments>` or `./.venv/Scripts/python.exe main.py <ARGUMENTS>`

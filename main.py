@@ -160,7 +160,11 @@ def gen_colors(img):
     with open(json_path, "w") as cj:
         print("Updated pywal's colors.json path format for Pywalfox")
         cj.write(dumps(wal, indent=4))
-    cmd("python -m pywalfox update")
+    try:
+        Popen(["python", "-m", "pywalfox", "update"])
+        print("Pywalfox updated")
+    except Exception:
+        print("Pywalfox not updated")
 
     # process color scheme
     wal["colors"].update(wal["special"])
@@ -224,7 +228,7 @@ def wal_engine(wals):
         source = None
 
         # video
-        if any([wal.endswith(e) for e in vid_ext]):
+        if wal.endswith(vid_ext):
             source = filename
             if w == 0: # extract first frame
                 vidcap = cv2.VideoCapture(wal)
@@ -236,7 +240,7 @@ def wal_engine(wals):
             project = config["wallpapers"]+"/project.json"
 
         # picture
-        elif any([wal.endswith(e) for e in pic_ext]):
+        elif wal.endswith(pic_ext):
             if w == 0:
                 img = wals[0]
             rand = str(rchoice(range(100)))
